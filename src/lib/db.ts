@@ -1,30 +1,44 @@
 import mongoose from "mongoose";
-const mongoDb_Url = process.env.MONGO_URL
 
-if (!mongoDb_Url) {
-    throw new Error('MongoDB URL not found')
+const MONGO_URL = process.env.MONGO_URL;
+
+if (!MONGO_URL) {
+  throw new Error("MongoDB URL not found");
 }
 
-let cached = global.mongoose
+// Global cache (important for Next.js)
+let cached = (global as any).mongoose;
 
-if(!cached){
-    cached = global.mongoose = {conn: null, promise:null}
+if (!cached) {
+  cached = (global as any).mongoose = {
+    conn: null,
+    promise: null,
+  };
 }
 
-const connectDb = async () =>{
-    if(cached.conn){
-        return cached.conn;
-    }
-    if(!cached.promise){
-        cached.promise = mongoose.connect(mongoDb_Url).then((conn)=> conn.connection)
-    }
-    try {
-        const conn = await cached.promise
-        return conn
-        
-    } catch (error) {
-        console.log(error);
-    }
-}
+const connectDb = async () => {
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    cached.promise = mongoose
+      .connect(MONGO_URL, {
+        bufferCommands: false,
+        serverSelectionTimeoutMS: 5000,
+        tls: true,
+        tlsAllowInvalidCertificates: true,
+      })
+      .then((mongoose) => mongoose.connection);
+  }
+
+  try {
+    cached.conn = await cached.promise;
+    return cached.conn;
+  } catch (error) {
+    cached.promise = null;
+    throw error;
+  }
+};
 
 export default connectDb;

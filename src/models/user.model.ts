@@ -27,7 +27,6 @@ const userSchema = new mongoose.Schema<IUser>({
     },
     mobile:{
         type:String,
-        required:true
     },
     role:{
         type:String,
@@ -38,7 +37,7 @@ const userSchema = new mongoose.Schema<IUser>({
 
 }, { timestamps: true })
 
- const User= mongoose.models.users || mongoose.model("users",userSchema)
+ const UserModel= mongoose.models.users || mongoose.model("users",userSchema)
 
- export default User;
+ export default UserModel;
 
