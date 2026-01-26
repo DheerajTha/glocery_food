@@ -1,10 +1,10 @@
-import WelcomePage from '@/Components/Welcome'
+import RegisterPage from '@/Components/RegisterPage'
 import React from 'react'
 
 const Register = () => {
   return (
     <div>
-        <WelcomePage />
+        <RegisterPage />
     </div>
   )
 }
